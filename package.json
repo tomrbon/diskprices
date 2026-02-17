@@ -1,0 +1,22 @@
+{
+  "name": "diskprices-site",
+  "version": "1.0.0",
+  "description": "DiskPrices.info - Compare storage prices across retailers",
+  "scripts": {
+    "build": "npx @11ty/eleventy",
+    "serve": "npx @11ty/eleventy --serve",
+    "clean": "rm -rf _site"
+  },
+  "keywords": [
+    "storage",
+    "prices",
+    "hdd",
+    "ssd",
+    "comparison"
+  ],
+  "author": "DiskPrices.info",
+  "license": "MIT",
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.1"
+  }
+}

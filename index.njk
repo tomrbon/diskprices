@@ -1,0 +1,196 @@
+---
+layout: base.njk
+title: Home
+---
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <h1 class="hero-title">Find the Best Storage Deals</h1>
+      <p class="hero-subtitle">Compare prices across retailers. Updated daily with the best deals on HDDs, SSDs, tape, RAM, and more.</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">{{ products.products | length }}</span>
+          <span class="stat-label">Products</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ categories | length }}</span>
+          <span class="stat-label">Categories</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">2</span>
+          <span class="stat-label">Retailers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="products" class="products-section">
+  <div class="container">
+    <div class="affiliate-disclosure">
+      💡 Affiliate Disclosure: This site earns commissions from qualifying purchases through affiliate links at no extra cost to you. <a href="/privacy/">Learn more</a>.
+    </div>
+    
+    <div class="controls">
+      <div class="filter-group">
+        <label for="category-filter" class="filter-label">Category</label>
+        <select id="category-filter" class="filter-select">
+          <option value="">All Categories</option>
+          <option value="HDD">HDD</option>
+          <option value="SSD">SSD</option>
+          <option value="Tape">Tape</option>
+          <option value="RAM">RAM</option>
+          <option value="SD Card">SD Card</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="retailer-filter" class="filter-label">Retailer</label>
+        <select id="retailer-filter" class="filter-select">
+          <option value="">All Retailers</option>
+          <option value="Amazon">Amazon</option>
+          <option value="Newegg">Newegg</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="condition-filter" class="filter-label">Condition</label>
+        <select id="condition-filter" class="filter-select">
+          <option value="">All Conditions</option>
+          <option value="New">New</option>
+          <option value="Used">Used</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="sort-filter" class="filter-label">Sort By</label>
+        <select id="sort-filter" class="filter-select">
+          <option value="pricePerTB-asc">Price/TB (Low to High)</option>
+          <option value="pricePerTB-desc">Price/TB (High to Low)</option>
+          <option value="price-asc">Total Price (Low to High)</option>
+          <option value="price-desc">Total Price (High to Low)</option>
+          <option value="capacity-desc">Capacity (High to Low)</option>
+          <option value="capacity-asc">Capacity (Low to High)</option>
+        </select>
+      </div>
+      
+      <div class="search-group">
+        <label for="search-input" class="filter-label">Search</label>
+        <input type="text" id="search-input" class="search-input" placeholder="Search products...">
+      </div>
+    </div>
+    
+    <div class="results-info">
+      <span id="results-count">{{ products.products | length }} products found</span>
+    </div>
+    
+    <!-- Product Cards Grid -->
+    <div class="products-grid" id="products-grid">
+      {% for product in products.products %}
+      <article class="product-card" 
+               data-category="{{ product.category }}" 
+               data-retailer="{{ product.retailer }}" 
+               data-condition="{{ product.condition }}"
+               data-name="{{ product.name | lower }}"
+               data-price-per-tb="{{ product.pricePerTB }}"
+               data-price="{{ product.price }}"
+               data-capacity-tb="{% if product.capacityUnit == 'GB' %}{{ product.capacity / 1024 }}{% else %}{{ product.capacity }}{% endif %}">
+        
+        <!-- Badges -->
+        <div class="card-header">
+          <div class="card-badges">
+            <span class="badge badge-{{ product.category | slug }}">{{ product.category }}</span>
+            <span class="condition-badge condition-{{ product.condition | slug }}">{{ product.condition }}</span>
+          </div>
+        </div>
+        
+        <!-- Product Name -->
+        <h3 class="product-name">{{ product.name }}</h3>
+        <p class="product-subcategory">{{ product.subcategory }}</p>
+        
+        <!-- Price Per TB - THE VISUAL HERO -->
+        <div class="price-hero">
+          <span class="price-hero-label">Price per TB</span>
+          <span class="price-per-tb">${{ product.pricePerTB | formatNumber }}</span>
+        </div>
+        
+        <!-- Details -->
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M12 12h.01"/><path d="M17 12h.01"/><path d="M7 12h.01"/></svg>
+              Capacity
+            </span>
+            <span class="detail-value capacity-value">
+              <span class="capacity-number">{{ product.capacity }}</span>
+              <span class="capacity-unit">{{ product.capacityUnit }}</span>
+            </span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+              Total Price
+            </span>
+            <span class="detail-value price-value">${{ product.price | formatNumber }}</span>
+          </div>
+          
+          <div class="detail-row">
+            <span class="detail-label">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+              Retailer
+            </span>
+            <span class="detail-value retailer-badge">{{ product.retailer }}</span>
+          </div>
+        </div>
+        
+        <!-- Buy Button -->
+        <div class="card-footer">
+          <a href="{{ product.url }}" 
+             target="_blank" 
+             rel="noopener"
+             class="buy-link">
+            View Deal
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>
+          </a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    
+    <!-- No Results -->
+    <div id="no-results" class="no-results" style="display: none;">
+      <div class="no-results-icon">🔍</div>
+      <h3>No products found</h3>
+      <p>Try adjusting your filters or search terms to find what you're looking for.</p>
+    </div>
+  </div>
+</section>
+
+<section id="about" class="about-section">
+  <div class="container">
+    <h2 class="section-title">About DiskPrices.info</h2>
+    <div class="about-content">
+      <div class="about-text">
+        <p>DiskPrices.info helps you find the best storage deals by calculating the true cost-per-terabyte across different storage types and retailers. Our mission is to help you make informed decisions when purchasing storage, whether you're building a NAS, upgrading your gaming PC, or archiving important data.</p>
+        <h3>Why Price Per TB?</h3>
+        <p>When comparing storage, the total price can be misleading. A 20TB drive at $300 costs $15/TB, while a 4TB drive at $80 costs $20/TB — you're paying more per terabyte for the smaller drive! The price-per-terabyte metric gives you a fair comparison across different capacities.</p>
+        <h3>Data Sources</h3>
+        <p>Prices are fetched automatically from affiliate APIs and updated daily. All links include affiliate tags which help support this site at no extra cost to you. We earn a small commission on qualifying purchases.</p>
+      </div>
+      <div class="about-categories">
+        <h3>Categories</h3>
+        <ul class="category-list">
+          <li><span class="category-icon">💾</span><strong>HDD</strong> — Hard Disk Drives</li>
+          <li><span class="category-icon">⚡</span><strong>SSD</strong> — Solid State Drives</li>
+          <li><span class="category-icon">📼</span><strong>Tape</strong> — LTO Tape Cartridges</li>
+          <li><span class="category-icon">🔧</span><strong>RAM</strong> — Memory Modules</li>
+          <li><span class="category-icon">📱</span><strong>SD Card</strong> — Memory Cards</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script src="{{ '/js/main.js' | url }}"></script>

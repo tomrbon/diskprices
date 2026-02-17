@@ -1,0 +1,71 @@
+# GitHub Actions Workflow for diskprices.info
+# 
+# Setup Required:
+#   1. Add secrets to GitHub repo settings:
+#      - CLOUDFLARE_API_TOKEN (from Cloudflare dashboard)
+#      - CLOUDFLARE_ACCOUNT_ID
+#      - AMAZON_ACCESS_KEY, AMAZON_SECRET_KEY, AMAZON_PARTNER_TAG (for PAAPI)
+#      - BESTBUY_API_KEY (optional)
+#
+#   2. Cloudflare Pages project must be created first
+
+name: Update Prices & Deploy
+
+on:
+  schedule:
+    # Run every 6 hours: 0, 6, 12, 18 UTC
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+    # Allow manual trigger from GitHub Actions tab
+  push:
+    branches: [main, master]
+    paths:
+      - '_data/products.json'
+      - 'package.json'
+      - '.github/workflows/deploy.yml'
+
+jobs:
+  update-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Price fetcher step (uncomment when API keys are configured)
+      # - name: Fetch updated prices
+      #   env:
+      #     AMAZON_ACCESS_KEY: ${{ secrets.AMAZON_ACCESS_KEY }}
+      #     AMAZON_SECRET_KEY: ${{ secrets.AMAZON_SECRET_KEY }}
+      #     AMAZON_PARTNER_TAG: ${{ secrets.AMAZON_PARTNER_TAG }}
+      #     BESTBUY_API_KEY: ${{ secrets.BESTBUY_API_KEY }}
+      #   run: node ../fetcher/update-prices.js
+
+      - name: Build site
+        run: npm run build
+
+      - name: Commit price updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add _data/products.json || true
+          git diff --quiet && git diff --cached --quiet || git commit -m "Auto-update prices $(date +%Y-%m-%d)"
+          git push || true
+
+      # Cloudflare Pages auto-deploys when it detects pushes to main/master
+      # No additional deployment step needed if Pages is connected to repo
+      
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed! Check the logs."
+          # Add notification webhook here if desired
