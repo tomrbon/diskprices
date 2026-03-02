@@ -17,6 +17,52 @@ module.exports = function(eleventyConfig) {
     });
   });
 
+  // Date to ISO string (for schema.org)
+  eleventyConfig.addFilter('dateToISOString', function(date) {
+    if (date instanceof Date) {
+      return date.toISOString();
+    }
+    return new Date(date).toISOString();
+  });
+
+  // Date formatting for display
+  eleventyConfig.addFilter('dateFormat', function(date) {
+    if (!date) return '';
+    const d = date instanceof Date ? date : new Date(date);
+    return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  });
+
+  // Excerpt from content
+  eleventyConfig.addFilter('excerpt', function(content, length = 150) {
+    if (!content) return '';
+    const stripped = content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
+    if (stripped.length <= length) return stripped;
+    return stripped.substring(0, length).trim() + '...';
+  });
+
+  // Title case filter
+  eleventyConfig.addFilter('title', function(text) {
+    if (!text) return '';
+    return text.replace(/\w\S*/g, txt => 
+      txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    );
+  });
+
+  // Reading time estimate
+  eleventyConfig.addFilter('readTime', function(content) {
+    if (!content) return 1;
+    const text = content.replace(/<[^>]*>/g, '');
+    const words = text.split(/\s+/).length;
+    const minutes = Math.ceil(words / 200);
+    return Math.max(1, minutes);
+  });
+
+  // Posts collection for blog articles
+  eleventyConfig.addCollection('posts', function(collectionApi) {
+    return collectionApi.getFilteredByGlob('posts/*.md')
+      .sort((a, b) => b.date - a.date);
+  });
+
   // Add global data
   eleventyConfig.addGlobalData('year', () => new Date().getFullYear());
   eleventyConfig.addGlobalData('categories', () => ['HDD', 'SSD', 'Tape', 'RAM', 'SD Card']);

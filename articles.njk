@@ -1,0 +1,40 @@
+---
+layout: base.njk
+title: Storage Drive Articles & Guides
+description: Expert guides on choosing the best hard drives, SSDs, NAS drives, and storage solutions for backup, gaming, video editing, and more.
+---
+
+<section class="articles-section">
+  <div class="container">
+    <div class="articles-hero">
+      <h1 class="articles-title">Storage Guides & Articles</h1>
+      <p class="articles-subtitle">Expert advice on choosing the right storage for your needs — from backup drives to gaming SSDs and everything in between.</p>
+    </div>
+    
+    <div class="articles-grid">
+      {% for post in collections.posts %}
+      <article class="article-card">
+        <div class="article-image">
+          <img src="{{ post.data.image | default('https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=800&h=400&fit=crop') }}" alt="{{ post.data.title }}" loading="lazy">
+        </div>
+        <div class="article-content">
+          <div class="article-meta">
+            {% if post.data.categories[0] %}
+            <span class="article-category">{{ post.data.categories[0] }}</span>
+            {% endif %}
+            <span class="article-date">{{ post.data.date | dateFormat }}</span>
+          </div>
+          <h2 class="article-title">
+            <a href="{{ post.url }}">{{ post.data.title }}</a>
+          </h2>
+          <p class="article-excerpt">{{ post.data.description | default(post.templateContent | excerpt(150)) }}</p>
+          <span class="article-read-more">
+            Read Article
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </span>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
