@@ -63,6 +63,32 @@ module.exports = function(eleventyConfig) {
       .sort((a, b) => b.date - a.date);
   });
 
+  // Related articles filter for internal linking
+  eleventyConfig.addFilter('relatedArticles', function(article, allArticles, limit = 4) {
+    if (!article || !allArticles) return [];
+    
+    const scored = allArticles
+      .filter(a => a.url !== article.url)
+      .map(a => {
+        let score = 0;
+        if (a.data.category && article.data.category) {
+          const sharedCats = a.data.category.filter(c => article.data.category.includes(c));
+          score += sharedCats.length * 10;
+        }
+        const articleTags = article.data.tags || [];
+        const aTags = a.data.tags || [];
+        const sharedTags = articleTags.filter(t => aTags.includes(t));
+        score += sharedTags.length * 3;
+        return { article: a, score };
+      })
+      .filter(item => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, limit)
+      .map(item => item.article);
+    
+    return scored;
+  });
+
   // Add global data
   eleventyConfig.addGlobalData('year', () => new Date().getFullYear());
   eleventyConfig.addGlobalData('categories', () => ['HDD', 'SSD', 'Tape', 'RAM', 'SD Card']);

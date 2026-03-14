@@ -57,6 +57,24 @@ layout: base.njk
       </p>
     </div>
     
+    {% set related = page | relatedArticles(collections.posts, 4) %}
+    {% if related.length > 0 %}
+    <section class="related-articles">
+      <h2>Related Articles</h2>
+      <div class="article-grid">
+        {% for rel in related %}
+        <article class="article-card">
+          <a href="{{ rel.url }}">
+            <img src="{{ rel.data.image }}" alt="{{ rel.data.title }}" loading="lazy">
+            <h3>{{ rel.data.title }}</h3>
+            <p>{{ rel.data.description | truncate(120) }}</p>
+          </a>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+    {% endif %}
+    
     <div class="article-nav">
       <a href="/articles/" class="article-nav-link">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -65,7 +83,7 @@ layout: base.njk
     </div>
   </footer>
   
-  <!-- Schema.org Article Markup -->
+  {# Enhanced JSON-LD Schema #}
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
